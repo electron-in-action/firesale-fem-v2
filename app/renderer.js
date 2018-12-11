@@ -58,9 +58,13 @@ openFileButton.addEventListener('click', () => {
   mainProcess.getFileFromUser();
 });
 
-saveMarkdownButton.addEventListener('click', () => {
+const saveMarkdown = () => {
   mainProcess.saveMarkdown(filePath, markdownView.value);
-});
+};
+
+saveMarkdownButton.addEventListener('click', saveMarkdown);
+
+ipcRenderer.on('save-markdown', saveMarkdown);
 
 saveHtmlButton.addEventListener('click', () => {
   mainProcess.saveHtml(htmlView.innerHTML);
@@ -72,6 +76,14 @@ showFileButton.addEventListener('click', () => {
   }
 
   shell.showItemInFolder(filePath);
+});
+
+openInDefaultButton.addEventListener('click', () => {
+  if (!filePath) {
+    return alert('Nope');
+  }
+
+  shell.openItem(filePath);
 });
 
 ipcRenderer.on('file-opened', (event, file, content) => {
