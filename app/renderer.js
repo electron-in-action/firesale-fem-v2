@@ -31,7 +31,15 @@ const updateUserInterface = isEdited => {
     title = `${path.basename(filePath)} - ${title}`;
   }
 
-  console.log({ isEdited });
+  if (isEdited) {
+    title = `${title} (Edited)`;
+  }
+
+  if (filePath) currentWindow.setRepresentedFilename(filePath);
+  currentWindow.setDocumentEdited(isEdited);
+
+  saveMarkdownButton.disabled = !isEdited;
+  revertButton.disabled = !isEdited;
 
   currentWindow.setTitle(title);
 };
@@ -47,6 +55,10 @@ openFileButton.addEventListener('click', () => {
   mainProcess.getFileFromUser();
 });
 
+saveMarkdownButton.addEventListener('click', () => {
+  mainProcess.saveMarkdown(filePath, markdownView.value);
+});
+
 ipcRenderer.on('file-opened', (event, file, content) => {
   filePath = file;
   originalContent = content;
@@ -54,5 +66,5 @@ ipcRenderer.on('file-opened', (event, file, content) => {
   markdownView.value = content;
   renderMarkdownToHtml(content);
 
-  updateUserInterface();
+  updateUserInterface(false);
 });
